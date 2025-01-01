@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akıllı Saksı Kontrol Paneli</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .navbar {
+      background-color: #333333;
+    }
+    .navbar-brand {
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+    }
+    .card {
+      background-color: #1e1e1e;
+      border: none;
+      color: #e0e0e0;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      background-color: #333333;
+      border-bottom: 1px solid #444;
+      font-weight: 600;
+    }
+    .btn-primary {
+      background-color: #03a9f4;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-primary:hover {
+      background-color: #0288d1;
+    }
+    .btn-refresh {
+      margin-top: 10px;
+    }
+    .btn-refresh i {
+      margin-right: 5px;
+    }
+    .btn-refresh {
+      display: block;
+      margin: 10px auto;
+    }
+    .btn-refresh-all {
+      background-color: #6200ea;
+      color: #fff;
+      border: none;
+    }
+    .btn-refresh-all:hover {
+      background-color: #3700b3;
+    }
+    .row {
+      row-gap: 20px;
+    }
+    .info-box {
+      color: #fff;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+	  font-size: 0.9rem;
+      margin-top: 15px;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      margin-top: auto;
+      padding: 10px;
+      background-color: #222;
+      color: #aaa;
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.5s linear infinite;
+      margin-left: 5px;
+    }
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Akıllı Saksı Kontrol Paneli</a>
+    </div>
+  </nav>
+  <div class="container my-4">
+    <div class="row">
+      <!-- LDR Sensörü Bilgisi -->
+      <div class="col-12 col-md-4">
+        <div class="card text-center">
+          <div class="card-header">
+            <i class="fas fa-sun"></i> Işık Seviyesi
+          </div>
+          <div class="card-body">
+            <h5 class="card-title" id="ldr-value">--</h5>
+          </div>
+        </div>
+      </div>
+      <!-- DHT11 Sensörü Bilgisi -->
+      <div class="col-12 col-md-4">
+        <div class="card text-center">
+          <div class="card-header">
+            <i class="fas fa-thermometer-half"></i> Isı ve Nem
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Sıcaklık: <span id="temp-value">--</span> °C</h5>
+            <h5 class="card-title">Nem: <span id="humidity-value">--</span> %</h5>
+          </div>
+        </div>
+      </div>
+      <!-- Toprak Nemi Sensörü Bilgisi -->
+      <div class="col-12 col-md-4">
+        <div class="card text-center">
+          <div class="card-header">
+            <i class="fas fa-water"></i> Toprak Nem Seviyesi
+          </div>
+          <div class="card-body">
+            <h5 class="card-title" id="soil-moisture-value">--</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center my-4">
+      <button class="btn btn-refresh-all" id="refresh-all">
+        <i class="fas fa-sync-alt"></i> Tüm Verileri Yenile
+      </button>
+      <div class="info-box">Tüm veriler otomatik olarak 3 saniyede bir yenilenmektedir.</div>
+    </div>
+  </div>
+  <footer>
+    © 2025 Arduino Tabanlı Akıllı Saksı Projesi.
+  </footer>
+
+  <script>
+    // Sensör verilerini güncelleyen simülasyon (ESP8266'dan veri bekleniyor)
+    function updateLdrData() {
+      document.getElementById('ldr-value').innerText = Math.floor(Math.random() * 100) + " %";
+    }
+
+    function updateDhtData() {
+      document.getElementById('temp-value').innerText = (Math.random() * 10 + 20).toFixed(1);
+      document.getElementById('humidity-value').innerText = Math.floor(Math.random() * 50 + 30);
+    }
+
+    function updateSoilData() {
+      document.getElementById('soil-moisture-value').innerText = Math.floor(Math.random() * 100) + " %";
+    }
+
+    // Tüm sensörleri yenileyen fonksiyon
+    function updateAllData() {
+      updateLdrData();
+      updateDhtData();
+      updateSoilData();
+    }
+
+    // Sayfa yüklendiğinde tüm verileri yenile
+    document.addEventListener('DOMContentLoaded', () => {
+      updateAllData();
+      setInterval(updateAllData, 3000); // Her 3 saniyede bir tüm verileri yenile
+    });
+
+    // Tüm Verileri Yenile butonu için olay işleyicisi
+    document.getElementById('refresh-all').addEventListener('click', function () {
+      const originalText = this.innerHTML;
+      this.innerHTML = '<span class="spinner"></span> Yenileniyor...';
+
+      setTimeout(() => {
+        updateAllData();
+        this.innerHTML = originalText;
+      }, 500);
+    });
+  </script>
+</body>
+</html>
