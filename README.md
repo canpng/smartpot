@@ -8,6 +8,3 @@ Bu proje, Arduino tabanlı akıllı bir saksı kontrol paneli oluşturmayı ama�
 2. DHT11 Sensörü ile Isı ve Nem Ölçümü: Ortam sıcaklığı ve nem değerlerini ölçerek kullanıcıya sunar.
 3. Toprak Nemi Sensörü ile Toprak Nem Seviyesi Ölçümü: Saksıdaki toprağın nem seviyesini yüzde olarak ölçer.
 4. Veri Yenileme: Tüm sensör verileri otomatik olarak her 3 saniyede bir yenilenir. Kullanıcı, "Tüm Verileri Yenile" butonuna basarak verileri manuel olarak da güncelleyebilir.
-
-Bu proje MIT lisansı altında lisanslanmıştır.
-Bu dosya, projenizin kullanıcılarına, katkıda bulunanlara ve geliştiricilere yönelik temel bilgileri içermektedir. Kendi projenize özgü detayları ve bağlantıları ekleyerek daha kapsamlı hale getirebilirsiniz.
