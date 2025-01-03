@@ -174,123 +174,135 @@
   </footer>
 
   <script>
-	const chartData = {
-	  labels: [],
-	  datasets: [
-	    {
-	      label: 'Işık Seviyesi (%)',
-	      data: [],
-	      borderColor: '#FF5733',
-	      backgroundColor: '#FF5733',
-	      borderWidth: 2,
-	      fill: false
-	    },
-	    {
-	      label: 'Toprak Nem Seviyesi (%)',
-	      data: [],
-	      borderColor: '#33FF57',
-	      backgroundColor: '#33FF57',
-	      borderWidth: 2,
-	      fill: false
-	    },
-	    {
-	      label: 'Nem (%)',
-	      data: [],
-	      borderColor: '#3357FF',
-	      backgroundColor: '#3357FF',
-	      borderWidth: 2,
-	      fill: false
-	    },
-	    {
-	      label: 'Sıcaklık (°C)',
-	      data: [],
-	      borderColor: '#FFC300',
-	      backgroundColor: '#FFC300',
-	      borderWidth: 2,
-	      fill: false
-	    }
-	  ]
-	};
-	
-	const chartOptions = {
-	  responsive: true,
-	  maintainAspectRatio: false,
-	  plugins: {
-	    legend: {
-	      labels: {
-	        usePointStyle: true,
-	        pointStyle: 'rect'
-	      }
-	    }
-	  },
-	  scales: {
-	    x: {
-	      title: {
-	        display: true,
-	        text: 'Zaman'
-	      }
-	    },
-	    y: {
-	      beginAtZero: true,
-	      title: {
-	        display: true,
-	        text: 'Değer'
-	      }
-	    }
-	  }
-	};
-	
-	const ctx = document.getElementById('data-chart').getContext('2d');
-	const dataChart = new Chart(ctx, {
-	  type: 'line',
-	  data: chartData,
-	  options: chartOptions
-	});
-	
-	function updateChart(label, value) {
-	  const dataset = chartData.datasets.find(dataset => dataset.label === label);
-	  const now = new Date().toLocaleTimeString();
-	  if (!chartData.labels.includes(now)) chartData.labels.push(now);
-	  dataset.data.push(value);
-	  if (dataset.data.length > 20) {
-	    dataset.data.shift();
-	  }
-	  if (chartData.labels.length > 20) {
-	    chartData.labels.shift();
-	  }
-	  dataChart.update();
-	}
-	
-	async function fetchSensorData() {
-	  try {
-	    const response = await fetch('http://'+window.location.hostname+'/data');
-	    const data = await response.json();
-	    
-	    document.getElementById('ldr-value').innerText = data.light + ' %';
-	    document.getElementById('temp-value').innerText = data.temperature;
-	    document.getElementById('humidity-value').innerText = data.humidity;
-	    document.getElementById('soil-moisture-value').innerText = data.soil + ' %';
-	    
-	    updateChart('Işık Seviyesi (%)', data.light);
-	    updateChart('Sıcaklık (°C)', data.temperature);
-	    updateChart('Nem (%)', data.humidity);
-	    updateChart('Toprak Nem Seviyesi (%)', data.soil);
-	  } catch (error) {
-	    console.error('Veri alınamadı:', error);
-	  }
-	}
-	
-	document.addEventListener('DOMContentLoaded', fetchSensorData);
-	
-	document.getElementById('refresh-all').addEventListener('click', async function() {
-	  const button = this;
-	  const originalText = button.innerHTML;
-	  button.innerHTML = '<span class="spinner"></span>&nbsp&nbspYenileniyor...';
-	
-	  await fetchSensorData();
-	  
-	  button.innerHTML = originalText;
-	});	  
+    const chartData = {
+      labels: [],
+      datasets: [
+        {
+          label: 'Işık Seviyesi (%)',
+          data: [],
+          borderColor: '#FF5733',
+          backgroundColor: '#FF5733',
+          borderWidth: 2,
+          fill: false
+        },
+        {
+          label: 'Toprak Nem Seviyesi (%)',
+          data: [],
+          borderColor: '#33FF57',
+          backgroundColor: '#33FF57',
+          borderWidth: 2,
+          fill: false
+        },
+        {
+          label: 'Nem (%)',
+          data: [],
+          borderColor: '#3357FF',
+          backgroundColor: '#3357FF',
+          borderWidth: 2,
+          fill: false
+        },
+        {
+          label: 'Sıcaklık (°C)',
+          data: [],
+          borderColor: '#FFC300',
+          backgroundColor: '#FFC300',
+          borderWidth: 2,
+          fill: false
+        }
+      ]
+    };
+
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'rect'
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Zaman'
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Değer'
+          }
+        }
+      }
+    };
+
+    const ctx = document.getElementById('data-chart').getContext('2d');
+    const dataChart = new Chart(ctx, {
+      type: 'line',
+      data: chartData,
+      options: chartOptions
+    });
+
+    function updateLdrData() {
+      const value = Math.floor(Math.random() * 100);
+      document.getElementById('ldr-value').innerText = value + ' %';
+      updateChart('Işık Seviyesi (%)', value);
+    }
+
+    function updateDhtData() {
+      const tempValue = (Math.random() * 10 + 20).toFixed(1);
+      const humidityValue = Math.floor(Math.random() * 50 + 30);
+      document.getElementById('temp-value').innerText = tempValue;
+      document.getElementById('humidity-value').innerText = humidityValue;
+      updateChart('Sıcaklık (°C)', tempValue);
+      updateChart('Nem (%)', humidityValue);
+    }
+
+    function updateSoilData() {
+      const value = Math.floor(Math.random() * 100);
+      document.getElementById('soil-moisture-value').innerText = value + ' %';
+      updateChart('Toprak Nem Seviyesi (%)', value);
+    }
+
+    function updateChart(label, value) {
+      const dataset = chartData.datasets.find(dataset => dataset.label === label);
+      const now = new Date().toLocaleTimeString();
+      if (!chartData.labels.includes(now)) chartData.labels.push(now);
+      dataset.data.push(value);
+      if (dataset.data.length > 20) {
+        dataset.data.shift();
+      }
+      if (chartData.labels.length > 20) {
+        chartData.labels.shift();
+      }
+      dataChart.update();
+    }
+
+    function updateAllData() {
+      updateLdrData();
+      updateDhtData();
+      updateSoilData();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateAllData();
+      setInterval(updateAllData, 3000);
+    });
+
+    document.getElementById('refresh-all').addEventListener('click', function () {
+      const button = this;
+      const originalText = button.innerHTML;
+      button.innerHTML = '<span class="spinner"></span>&nbsp&nbspYenileniyor...';
+
+      setTimeout(() => {
+        updateAllData();
+        button.innerHTML = originalText;
+      }, 500);
+    });
   </script>
 </body>
 </html>
