@@ -1,308 +1,309 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Akıllı Saksı Kontrol Paneli</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: 'Poppins', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .navbar {
-      background-color: #333333;
-	  margin-bottom: 10px;
-    }
-    .navbar-brand {
-      font-size: 1.2rem;
-      text-align: center;
-      width: 100%;
-    }
-    .card {
-      background-color: #1e1e1e;
-      border: none;
-      color: #e0e0e0;
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .card-header {
-      background-color: #333333;
-      border-bottom: 1px solid #444;
-      font-weight: 600;
-    }
-    .card-title {
-      margin: auto;
-    }
-    .btn-primary {
-      background-color: #03a9f4;
-      border: none;
-    }
-    .btn-primary:hover {
-      background-color: #0288d1;
-    }
-    .btn-refresh {
-      margin-top: 10px;
-    }
-    .btn-refresh-all {
-      background-color: #6200ea;
-      color: #fff;
-      border: none;
-      font-size: 1.2rem;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-	  display: block;
-	  margin-left: auto;
-	  margin-right: auto;
-    }
-    .btn-refresh-all:hover {
-      background-color: #3700b3;
-    }
-    .row {
-      row-gap: 20px;
-    }
-    .chart-container {
-      background-color: #1e1e1e;
-      padding: 15px;
-      border-radius: 8px;
-	  margin-bottom: 35px;
-    }
-    .desktop-graph {
-      height: 500px;
-    }
-    footer {
-      text-align: center;
-      font-size: 0.8rem;
-      margin-top: auto;
-      padding: 10px;
-      background-color: #222;
-      color: #aaa;
-    }
-    .spinner {
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top: 3px solid #fff;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-    }
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Akıllı Saksı Kontrol Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: Poppins, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column
       }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-    @media (max-width: 991.98px) {
-      .chart-container {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Akıllı Saksı Kontrol Paneli</a>
-    </div>
-  </nav>
-  <div class="container my-3">
-    <div class="row">
-      <!-- LDR Sensörü Bilgisi -->
-      <div class="col-12 col-md-4">
-        <div class="card text-center">
-          <div class="card-header">
-            <i class="fas fa-sun"></i> Işık Seviyesi
-          </div>
-          <div class="card-body">
-            <h5 class="card-title" id="ldr-value">--</h5>
-          </div>
-        </div>
-      </div>
-      <!-- DHT11 Sensörü Bilgisi -->
-      <div class="col-12 col-md-4">
-        <div class="card text-center">
-          <div class="card-header">
-            <i class="fas fa-thermometer-half"></i> Isı ve Nem
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">Sıcaklık: <span id="temp-value">--</span> °C&nbsp&nbsp|&nbsp&nbspNem: <span id="humidity-value">--</span> %</h5>
-            <!--<h5 class="card-title">Nem: <span id="humidity-value">--</span> %</h5>-->
-          </div>
-        </div>
-      </div>
-      <!-- Toprak Nemi Sensörü Bilgisi -->
-      <div class="col-12 col-md-4">
-        <div class="card text-center">
-          <div class="card-header">
-            <i class="fas fa-water"></i> Toprak Nem Seviyesi
-          </div>
-          <div class="card-body">
-            <h5 class="card-title" id="soil-moisture-value">--</h5>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12 chart-container">
-        <canvas id="data-chart" class="desktop-graph"></canvas>
-      </div>
-    </div>
-    <div class="text-center my-3">
-      <button class="btn btn-refresh-all" id="refresh-all">
-        <i class="fas fa-sync-alt"></i>&nbsp&nbspVerileri Yenile
-      </button>
-    </div>
-  </div>
-  <footer>
-    © 2025 Arduino Tabanlı Akıllı Saksı Projesi.
-  </footer>
 
-  <script>
-    const chartData = {
-      labels: [],
-      datasets: [
-        {
+      .navbar {
+        background-color: #333;
+        margin-bottom: 10px
+      }
+
+      .navbar-brand {
+        font-size: 1.2rem;
+        text-align: center;
+        width: 100%
+      }
+
+      .card {
+        background-color: #1e1e1e;
+        border: none;
+        color: #e0e0e0;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center
+      }
+
+      .card-header {
+        background-color: #333;
+        border-bottom: 1px solid #444;
+        font-weight: 600
+      }
+
+      .card-title {
+        margin: auto
+      }
+
+      .btn-primary {
+        background-color: #03a9f4;
+        border: none
+      }
+
+      .btn-primary:hover {
+        background-color: #0288d1
+      }
+
+      .btn-refresh {
+        margin-top: 10px
+      }
+
+      .btn-refresh-all {
+        background-color: #6200ea;
+        color: #fff;
+        border: none;
+        font-size: 1.2rem;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto
+      }
+
+      .btn-refresh-all:hover {
+        background-color: #3700b3
+      }
+
+      .row {
+        row-gap: 20px
+      }
+
+      .chart-container {
+        background-color: #1e1e1e;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 35px
+      }
+
+      .desktop-graph {
+        height: 500px
+      }
+
+      footer {
+        text-align: center;
+        font-size: .8rem;
+        margin-top: auto;
+        padding: 10px;
+        background-color: #222;
+        color: #aaa
+      }
+
+      .spinner {
+        border: 3px solid rgba(255, 255, 255, .3);
+        border-top: 3px solid #fff;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+        display: inline-block
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0)
+        }
+
+        100% {
+          transform: rotate(360deg)
+        }
+      }
+
+      @media (max-width:991.98px) {
+        .chart-container {
+          display: none
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Akıllı Saksı Kontrol Paneli</a>
+      </div>
+    </nav>
+    <div class="container my-3">
+      <div class="row">
+        <div class="col-12 col-md-4">
+          <div class="card text-center">
+            <div class="card-header">
+              <i class="fas fa-sun"></i>&nbspIşık Seviyesi
+            </div>
+            <div class="card-body">
+              <h5 class="card-title" id="ldr-value">--</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card text-center">
+            <div class="card-header">
+              <i class="fas fa-thermometer-half"></i>&nbspIsı ve Nem
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Sıcaklık: <span id="temp-value">--</span>°C&nbsp&nbsp|&nbsp&nbspNem: <span id="humidity-value">--</span>% </h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card text-center">
+            <div class="card-header">
+              <i class="fas fa-water"></i>&nbspToprak Nem Seviyesi
+            </div>
+            <div class="card-body">
+              <h5 class="card-title" id="soil-moisture-value">--</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 chart-container">
+          <canvas id="data-chart" class="desktop-graph"></canvas>
+        </div>
+      </div>
+      <div class="text-center my-3">
+        <button class="btn btn-refresh-all" id="refresh-all">
+          <i class="fas fa-sync-alt"></i>&nbsp&nbspVerileri Yenile </button>
+      </div>
+    </div>
+    <footer>© 2025 Arduino Tabanlı Akıllı Saksı Projesi.</footer>
+    <script>
+      const chartData = {
+        labels: [],
+        datasets: [{
           label: 'Işık Seviyesi (%)',
           data: [],
           borderColor: '#FF5733',
           backgroundColor: '#FF5733',
           borderWidth: 2,
           fill: false
-        },
-        {
+        }, {
           label: 'Toprak Nem Seviyesi (%)',
           data: [],
           borderColor: '#33FF57',
           backgroundColor: '#33FF57',
           borderWidth: 2,
           fill: false
-        },
-        {
+        }, {
           label: 'Nem (%)',
           data: [],
           borderColor: '#3357FF',
           backgroundColor: '#3357FF',
           borderWidth: 2,
           fill: false
-        },
-        {
+        }, {
           label: 'Sıcaklık (°C)',
           data: [],
           borderColor: '#FFC300',
           backgroundColor: '#FFC300',
           borderWidth: 2,
           fill: false
-        }
-      ]
-    };
-
-    const chartOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: {
-            usePointStyle: true,
-            pointStyle: 'rect'
-          }
-        }
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: 'Zaman'
+        }]
+      };
+      const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'rect'
+            }
           }
         },
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Değer'
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Zaman'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Değer'
+            }
           }
         }
+      };
+      const ctx = document.getElementById('data-chart').getContext('2d');
+      const dataChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: chartOptions
+      });
+      async function fetchData() {
+        try {
+          const response = await fetch('https://api.thingspeak.com/channels/2800733/feeds.json?api_key=STHPOM4SYE83FL1L&results=20');
+          const data = await response.json();
+          const feeds = data.feeds;
+          if (feeds.length > 0) {
+            const latest = feeds[feeds.length - 1];
+            const ldrValue = latest.field1 || ' Veri Yok';
+            const tempValue = latest.field2 || ' Veri Yok';
+            const humidityValue = latest.field3 || ' Veri Yok';
+            const soilMoistureValue = latest.field4 || ' Veri Yok';
+            document.getElementById('ldr-value').innerText = ldrValue + (ldrValue !== ' Veri Yok' ? ' %' : '');
+            document.getElementById('temp-value').innerText = tempValue;
+            document.getElementById('humidity-value').innerText = humidityValue;
+            document.getElementById('soil-moisture-value').innerText = soilMoistureValue + (soilMoistureValue !== ' Veri Yok' ? ' %' : '');
+            if (ldrValue !== 'Veri Yok') updateChart('Işık Seviyesi (%)', parseInt(ldrValue));
+            if (tempValue !== 'Veri Yok') updateChart('Sıcaklık (°C)', parseFloat(tempValue));
+            if (humidityValue !== 'Veri Yok') updateChart('Nem (%)', parseInt(humidityValue));
+            if (soilMoistureValue !== 'Veri Yok') updateChart('Toprak Nem Seviyesi (%)', parseInt(soilMoistureValue));
+          }
+        } catch (error) {
+          console.error('Veri alınamadı:', error);
+          document.getElementById('ldr-value').innerText = ' Veri Yok';
+          document.getElementById('temp-value').innerText = ' Veri Yok';
+          document.getElementById('humidity-value').innerText = ' Veri Yok';
+          document.getElementById('soil-moisture-value').innerText = ' Veri Yok';
+        }
       }
-    };
 
-    const ctx = document.getElementById('data-chart').getContext('2d');
-    const dataChart = new Chart(ctx, {
-      type: 'line',
-      data: chartData,
-      options: chartOptions
-    });
-
-    function updateLdrData() {
-      const value = Math.floor(Math.random() * 100);
-      document.getElementById('ldr-value').innerText = value + ' %';
-      updateChart('Işık Seviyesi (%)', value);
-    }
-
-    function updateDhtData() {
-      const tempValue = (Math.random() * 10 + 20).toFixed(1);
-      const humidityValue = Math.floor(Math.random() * 50 + 30);
-      document.getElementById('temp-value').innerText = tempValue;
-      document.getElementById('humidity-value').innerText = humidityValue;
-      updateChart('Sıcaklık (°C)', tempValue);
-      updateChart('Nem (%)', humidityValue);
-    }
-
-    function updateSoilData() {
-      const value = Math.floor(Math.random() * 100);
-      document.getElementById('soil-moisture-value').innerText = value + ' %';
-      updateChart('Toprak Nem Seviyesi (%)', value);
-    }
-
-    function updateChart(label, value) {
-      const dataset = chartData.datasets.find(dataset => dataset.label === label);
-      const now = new Date().toLocaleTimeString();
-      if (!chartData.labels.includes(now)) chartData.labels.push(now);
-      dataset.data.push(value);
-      if (dataset.data.length > 20) {
-        dataset.data.shift();
+      function updateChart(label, value) {
+        const dataset = chartData.datasets.find(dataset => dataset.label === label);
+        const now = new Date().toLocaleTimeString();
+        if (!chartData.labels.includes(now)) chartData.labels.push(now);
+        dataset.data.push(value);
+        if (dataset.data.length > 20) {
+          dataset.data.shift();
+        }
+        if (chartData.labels.length > 20) {
+          chartData.labels.shift();
+        }
+        dataChart.update();
       }
-      if (chartData.labels.length > 20) {
-        chartData.labels.shift();
-      }
-      dataChart.update();
-    }
-
-    function updateAllData() {
-      updateLdrData();
-      updateDhtData();
-      updateSoilData();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      updateAllData();
-      setInterval(updateAllData, 3000);
-    });
-
+      document.addEventListener('DOMContentLoaded', () => {
+        fetchData();
+        setInterval(fetchData, 3000);
+      });
     document.getElementById('refresh-all').addEventListener('click', function () {
       const button = this;
       const originalText = button.innerHTML;
       button.innerHTML = '<span class="spinner"></span>&nbsp&nbspYenileniyor...';
 
       setTimeout(() => {
-        updateAllData();
+        fetchData();
         button.innerHTML = originalText;
       }, 500);
-    });
-  </script>
-</body>
+    });</script>
+	</body>
 </html>
