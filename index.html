@@ -262,7 +262,7 @@
     // Son güncellenme tarihi
     const lastUpdateRaw = feeds[feeds.length - 1].created_at;
     const lastUpdateDate = new Date(lastUpdateRaw);
-    lastUpdateDate.setHours(lastUpdateDate.getHours() + 3); // Zaman farkını ekle
+    lastUpdateDate.setHours(lastUpdateDate.getHours()); // Zaman farkını eklemeye gerek yokmuş
     const lastUpdateString = lastUpdateDate.toLocaleString();
     document.getElementById('last-update').textContent = `Güncellenme Tarihi: ${lastUpdateString}`;
 
@@ -280,7 +280,7 @@
     document.getElementById('ldr-value').textContent = ldrValues[ldrValues.length - 1] + '%';
     document.getElementById('soil-moisture-value').textContent = soilMoistureValues[soilMoistureValues.length - 1] + '%';
     document.getElementById('temp-value').textContent = tempValues[tempValues.length - 1].toFixed(1);
-    document.getElementById('humidity-value').textContent = humidityValues[humidityValues.length - 1] + '%';
+    document.getElementById('humidity-value').textContent = humidityValues[humidityValues.length - 1] + '';
   } catch (error) {
     console.error('Veri alınamadı:', error);
   }
